@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "./Header";
 import UserProfileForm from "./UserProfileForm";
@@ -15,7 +16,6 @@ import { suggestResumeImprovements } from "@/ai/flows/suggest-resume-improvement
 import { generateResumeFromLinkedIn } from "@/ai/flows/generate-resume-from-linkedin";
 import { useToast } from "@/hooks/use-toast";
 import { Eye } from "lucide-react";
-import { ScrollArea } from "./ui/scroll-area";
 
 const initialProfile: UserProfile = {
   name: "Jane Doe",
@@ -58,6 +58,9 @@ const initialProfile: UserProfile = {
   portfolioLinks: ["https://github.com/janedoe"],
 };
 
+const LOCAL_STORAGE_KEY_PROFILE = 'resuMasterProfile';
+const LOCAL_STORAGE_KEY_JOB_DESC = 'resuMasterJobDescription';
+
 export default function ResuMasterDashboard() {
   const [activeTab, setActiveTab] = useState("editor");
   const [profile, setProfile] = useState<UserProfile>(initialProfile);
@@ -71,6 +74,42 @@ export default function ResuMasterDashboard() {
   const [isImporting, setIsImporting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const { toast } = useToast();
+
+  // Load state from localStorage on initial render
+  useEffect(() => {
+    try {
+      const savedProfile = localStorage.getItem(LOCAL_STORAGE_KEY_PROFILE);
+      if (savedProfile) {
+        setProfile(JSON.parse(savedProfile));
+      }
+      const savedJobDescription = localStorage.getItem(LOCAL_STORAGE_KEY_JOB_DESC);
+      if (savedJobDescription) {
+        setJobDescription(savedJobDescription);
+      }
+    } catch (error) {
+      console.error("Failed to parse from localStorage", error);
+      // If parsing fails, we'll just use the initial state
+    }
+  }, []);
+
+  // Save profile to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_PROFILE, JSON.stringify(profile));
+    } catch (error) {
+      console.error("Failed to save profile to localStorage", error);
+    }
+  }, [profile]);
+
+  // Save job description to localStorage whenever it changes
+  useEffect(() => {
+     try {
+      localStorage.setItem(LOCAL_STORAGE_KEY_JOB_DESC, jobDescription);
+    } catch (error) {
+      console.error("Failed to save job description to localStorage", error);
+    }
+  }, [jobDescription]);
+
 
   const handleAnalyzeJobDescription = async () => {
     if (!jobDescription) return;
