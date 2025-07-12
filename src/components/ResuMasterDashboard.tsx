@@ -7,12 +7,14 @@ import UserProfileForm from "./UserProfileForm";
 import JobDescriptionForm from "./JobDescriptionForm";
 import ResumePreview from "./ResumePreview";
 import AISuggestions from "./AISuggestions";
+import LinkedInImport from "./LinkedInImport";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import type { UserProfile } from "@/lib/types";
 import { extractJobSkills } from "@/ai/flows/extract-job-skills";
 import { suggestResumeImprovements } from "@/ai/flows/suggest-resume-improvements";
+import { generateResumeFromLinkedIn } from "@/ai/flows/generate-resume-from-linkedin";
 import { useToast } from "@/hooks/use-toast";
-import { Search } from "lucide-react";
+import { Search, Linkedin } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 
 const initialProfile: UserProfile = {
@@ -57,13 +59,16 @@ const initialProfile: UserProfile = {
 };
 
 export default function ResuMasterDashboard() {
+  const [activeTab, setActiveTab] = useState("editor");
   const [profile, setProfile] = useState<UserProfile>(initialProfile);
   const [jobDescription, setJobDescription] = useState("");
   const [extractedSkills, setExtractedSkills] = useState<string[]>([]);
   const [extractedRequirements, setExtractedRequirements] = useState<string[]>([]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [generatedProfile, setGeneratedProfile] = useState<UserProfile | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const { toast } = useToast();
 
   const handleAnalyzeJobDescription = async () => {
@@ -102,16 +107,39 @@ export default function ResuMasterDashboard() {
     }
   };
 
+  const handleLinkedInImport = async (linkedinUrl: string) => {
+    setIsImporting(true);
+    setGeneratedProfile(null);
+    try {
+      const result = await generateResumeFromLinkedIn({ linkedinUrl });
+      setGeneratedProfile(result);
+      toast({ title: "Profile Generated", description: "AI has created a resume profile from the URL." });
+    } catch (error) {
+      toast({ variant: "destructive", title: "Import Failed", description: "Could not generate a profile from the URL." });
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleAcceptGeneratedProfile = () => {
+    if (generatedProfile) {
+      setProfile(generatedProfile);
+      setGeneratedProfile(null);
+      setActiveTab("editor");
+      toast({ title: "Profile Imported!", description: "You can now edit your new resume." });
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <div className="flex-1">
-        <Tabs defaultValue="editor" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-center border-b">
             <TabsList className="bg-transparent p-0 m-2">
               <TabsTrigger value="editor">Resume Editor</TabsTrigger>
               <TabsTrigger value="suggestions">AI Suggestions</TabsTrigger>
-              <TabsTrigger value="matching">Job Matching</TabsTrigger>
+              <TabsTrigger value="import">LinkedIn Import</TabsTrigger>
             </TabsList>
           </div>
           <TabsContent value="editor">
@@ -143,21 +171,13 @@ export default function ResuMasterDashboard() {
               isLoading={isSuggesting} 
             />
           </TabsContent>
-          <TabsContent value="matching">
-            <div className="p-4 md:p-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-headline text-primary flex items-center gap-2">
-                    <Search /> Job Matching
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    This feature is coming soon! You'll be able to search for jobs and get AI-powered matching and suggestions.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+          <TabsContent value="import">
+            <LinkedInImport
+              handleImport={handleLinkedInImport}
+              isLoading={isImporting}
+              generatedProfile={generatedProfile}
+              handleAcceptProfile={handleAcceptGeneratedProfile}
+            />
           </TabsContent>
         </Tabs>
       </div>

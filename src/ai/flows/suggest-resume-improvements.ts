@@ -15,7 +15,7 @@ import {z} from 'genkit';
 const SuggestResumeImprovementsInputSchema = z.object({
   userProfile: z
     .string()
-    .describe('The user profile information, including skills, experience, and education.'),
+    .describe('The user profile information as a JSON string, including skills, experience, and education.'),
   jobDescription: z.string().describe('The job description for which the resume is being tailored.'),
 });
 export type SuggestResumeImprovementsInput = z.infer<
