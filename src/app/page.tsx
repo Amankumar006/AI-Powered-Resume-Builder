@@ -1,3 +1,9 @@
+import ResuMasterDashboard from "@/components/ResuMasterDashboard";
+
 export default function Home() {
-  return <></>;
+  return (
+    <main>
+      <ResuMasterDashboard />
+    </main>
+  );
 }
