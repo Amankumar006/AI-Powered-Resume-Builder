@@ -17,6 +17,8 @@ const SuggestResumeImprovementsInputSchema = z.object({
     .string()
     .describe('The user profile information as a JSON string, including skills, experience, and education.'),
   jobDescription: z.string().describe('The job description for which the resume is being tailored.'),
+  industry: z.string().optional().describe('The target industry for the job application (e.g., "Technology", "Healthcare").'),
+  location: z.string().optional().describe('The geographical location for the job (e.g., "San Francisco, CA").'),
 });
 export type SuggestResumeImprovementsInput = z.infer<
   typeof SuggestResumeImprovementsInputSchema
@@ -41,17 +43,28 @@ const prompt = ai.definePrompt({
   name: 'suggestResumeImprovementsPrompt',
   input: {schema: SuggestResumeImprovementsInputSchema},
   output: {schema: SuggestResumeImprovementsOutputSchema},
-  prompt: `You are a resume expert. Given the user profile and job description, suggest improvements to the resume content.
+  prompt: `You are a world-class career coach and resume expert. Your task is to provide highly personalized and actionable suggestions to improve a user's resume for a specific job application.
 
-User Profile:
-{{{userProfile}}}
+Analyze the following information:
+1.  **User's Profile:**
+    {{{userProfile}}}
 
-Job Description:
-{{{jobDescription}}}
+2.  **Job Description:**
+    {{{jobDescription}}}
 
-Suggest specific improvements to the user's resume based on the job description and industry trends. Focus on skills, experience, and keywords that the user should highlight or add.
+3.  **Target Context:**
+    - Industry: {{{industry}}}
+    - Location: {{{location}}}
 
-Return your suggestions in a list.
+Based on all this information, generate a list of specific improvements. Consider the following:
+- **Keyword Optimization:** Identify keywords from the job description that are missing from the resume.
+- **Industry Trends:** Incorporate current trends, technologies, and jargon relevant to the specified industry and location.
+- **Impact Metrics:** Suggest where the user can quantify their achievements with numbers and data.
+- **Action Verbs:** Recommend stronger, more dynamic action verbs.
+- **Company-Specifics:** If the company is well-known, infer its culture and values and suggest how the resume can reflect them.
+- **Formatting & Readability:** Briefly mention any formatting changes that could improve clarity for this specific role.
+
+Return your suggestions as a clear, concise list.
 `,
 });
 

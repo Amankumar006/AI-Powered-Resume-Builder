@@ -55,7 +55,7 @@ const initialProfile: UserProfile = {
   ],
   skills: ["React", "TypeScript", "Node.js", "GraphQL", "AWS", "Docker", "PostgreSQL"],
   certifications: ["AWS Certified Developer - Associate"],
-  portfolioLinks: ["github.com/janedoe"],
+  portfolioLinks: ["https://github.com/janedoe"],
 };
 
 export default function ResuMasterDashboard() {
@@ -97,6 +97,8 @@ export default function ResuMasterDashboard() {
       const result = await suggestResumeImprovements({
         userProfile: JSON.stringify(profile),
         jobDescription,
+        industry: profile.title,
+        location: profile.location,
       });
       setSuggestions(result.suggestions);
       toast({ title: "Suggestions Ready", description: "AI has generated resume improvements." });
