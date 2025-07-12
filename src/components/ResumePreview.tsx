@@ -27,7 +27,7 @@ const ResumePreview = ({ profile }: ResumePreviewProps) => {
   };
 
   return (
-    <Card id="resume-preview" className="w-full max-w-4xl mx-auto overflow-hidden bg-white shadow-2xl rounded-lg">
+    <Card id="resume-preview" className="relative w-full max-w-4xl mx-auto overflow-hidden bg-white shadow-2xl rounded-lg">
       <div className="p-4 sm:p-8 md:p-12">
         <header className="text-center mb-8 border-b-2 border-primary pb-6">
           <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">
