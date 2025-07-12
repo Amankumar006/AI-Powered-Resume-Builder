@@ -123,7 +123,7 @@ const ResumePreview = ({ profile }: ResumePreviewProps) => {
       <div className="absolute top-4 right-4 no-print">
         <Button onClick={handlePrint} variant="default">
           <Download className="mr-2 h-4 w-4" />
-          Download
+          Save as PDF
         </Button>
       </div>
     </Card>
