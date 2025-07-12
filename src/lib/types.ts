@@ -21,15 +21,15 @@ export const UserProfileSchema = z.object({
   name: z.string().describe('The full name of the user.'),
   title: z.string().describe('The professional title (e.g., Senior Software Engineer).'),
   email: z.string().email().describe('The email address.'),
-  phone: z.string().describe('The phone number.'),
-  website: z.string().url().describe('A personal website or portfolio URL.'),
-  location: z.string().describe('The city and state (e.g., San Francisco, CA).'),
+  phone: z.string().optional().describe('The phone number.'),
+  website: z.string().url().optional().describe('A personal website or portfolio URL.'),
+  location: z.string().optional().describe('The city and state (e.g., San Francisco, CA).'),
   summary: z.string().describe('A 2-3 sentence professional summary.'),
   experience: z.array(ExperienceSchema).describe('A list of professional experiences.'),
   education: z.array(EducationSchema).describe('A list of educational qualifications.'),
   skills: z.array(z.string()).describe('A list of relevant skills.'),
-  certifications: z.array(z.string()).describe('A list of professional certifications.'),
-  portfolioLinks: z.array(z.string().url()).describe('A list of portfolio links (e.g., GitHub).'),
+  certifications: z.array(z.string()).optional().describe('A list of professional certifications.'),
+  portfolioLinks: z.array(z.string().url()).optional().describe('A list of portfolio links (e.g., GitHub).'),
 });
 
 // TypeScript types inferred from Zod schemas
