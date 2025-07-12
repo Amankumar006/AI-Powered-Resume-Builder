@@ -8,13 +8,13 @@ import JobDescriptionForm from "./JobDescriptionForm";
 import ResumePreview from "./ResumePreview";
 import AISuggestions from "./AISuggestions";
 import LinkedInImport from "./LinkedInImport";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
 import type { UserProfile } from "@/lib/types";
 import { extractJobSkills } from "@/ai/flows/extract-job-skills";
 import { suggestResumeImprovements } from "@/ai/flows/suggest-resume-improvements";
 import { generateResumeFromLinkedIn } from "@/ai/flows/generate-resume-from-linkedin";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Linkedin } from "lucide-react";
+import { Eye } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 
 const initialProfile: UserProfile = {
@@ -69,6 +69,7 @@ export default function ResuMasterDashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const { toast } = useToast();
 
   const handleAnalyzeJobDescription = async () => {
@@ -145,25 +146,30 @@ export default function ResuMasterDashboard() {
             </TabsList>
           </div>
           <TabsContent value="editor">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 p-4 md:p-8">
-              <ScrollArea className="h-[calc(100vh-150px)]">
-                 <div className="space-y-6 pr-4">
-                  <UserProfileForm profile={profile} setProfile={setProfile} />
-                  <JobDescriptionForm 
-                    jobDescription={jobDescription}
-                    setJobDescription={setJobDescription}
-                    handleAnalyze={handleAnalyzeJobDescription}
-                    extractedSkills={extractedSkills}
-                    extractedRequirements={extractedRequirements}
-                    isAnalyzing={isAnalyzing}
-                  />
-                 </div>
-              </ScrollArea>
-              <ScrollArea className="h-[calc(100vh-150px)]">
-                <div className="pr-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:h-[calc(100vh-120px)] gap-4 md:gap-8 p-4 md:p-8">
+              <div className="lg:h-full lg:overflow-y-auto space-y-6 pr-0 lg:pr-4">
+                <UserProfileForm profile={profile} setProfile={setProfile} />
+                <JobDescriptionForm 
+                  jobDescription={jobDescription}
+                  setJobDescription={setJobDescription}
+                  handleAnalyze={handleAnalyzeJobDescription}
+                  extractedSkills={extractedSkills}
+                  extractedRequirements={extractedRequirements}
+                  isAnalyzing={isAnalyzing}
+                />
+                 <div className="h-16 lg:hidden" />
+              </div>
+              <div className={`lg:h-full lg:overflow-y-auto ${showPreview ? 'block' : 'hidden'} lg:block`}>
+                <div className="pr-0 lg:pr-4">
                   <ResumePreview profile={profile} />
                 </div>
-              </ScrollArea>
+              </div>
+            </div>
+             <div className="fixed bottom-4 right-4 lg:hidden">
+              <Button onClick={() => setShowPreview(!showPreview)} size="lg">
+                <Eye className="mr-2" />
+                {showPreview ? 'Hide Preview' : 'Show Preview'}
+              </Button>
             </div>
           </TabsContent>
           <TabsContent value="suggestions">
